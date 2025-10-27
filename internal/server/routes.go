@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 	"github.com/markbates/goth/gothic"
 )
 
@@ -61,9 +63,14 @@ func (s *Server) beginAuthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getAuthCallbackFunction(w http.ResponseWriter, r *http.Request) {
-	provider := chi.URLParam(r, "provider")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading environment variables")
+	}
 
-	// Use r.Context() instead of context.Background() to preserve session
+	provider := chi.URLParam(r, "provider")
+	redirectURL := os.Getenv("APP_URI")
+
 	r = r.WithContext(context.WithValue(r.Context(), "provider", provider))
 
 	user, err := gothic.CompleteUserAuth(w, r)
@@ -75,5 +82,5 @@ func (s *Server) getAuthCallbackFunction(w http.ResponseWriter, r *http.Request)
 
 	log.Printf("User authenticated: %s (%s)", user.Name, user.Email)
 
-	http.Redirect(w, r, "http://localhost:5173", http.StatusFound)
+	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
