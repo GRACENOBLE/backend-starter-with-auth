@@ -34,6 +34,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.Get("/auth/{provider}/callback", s.getAuthCallbackFunction)
 
+	r.Get("/logout/{provider}", s.logout)
+
 	return r
 }
 
@@ -83,4 +85,15 @@ func (s *Server) getAuthCallbackFunction(w http.ResponseWriter, r *http.Request)
 	log.Printf("User authenticated: %s (%s)", user.Name, user.Email)
 
 	http.Redirect(w, r, redirectURL, http.StatusFound)
+}
+
+func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env File")
+	}
+	postLogoutRedirectURL := os.Getenv("POST_LOGOUT_REDIRECT_URL")
+	gothic.Logout(w, r)
+	w.Header().Set("Location", postLogoutRedirectURL)
+	w.WriteHeader(http.StatusTemporaryRedirect)
 }
