@@ -40,11 +40,31 @@ A production-ready Go backend starter template with Google OAuth authentication 
 
 2. **Set up environment variables**
 
-   Create a `.env` file in the root directory:
+   Copy the example environment file and fill in your credentials:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   The `.env.example` file includes:
+
+   - Detailed comments for each configuration option
+   - Links to get OAuth credentials for each provider
+   - Instructions for callback URL setup
+   - Production deployment notes
+
+   **Minimum required configuration:**
 
    ```env
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   GOOGLE_CLIENT_ID=your_google_client_id_here
+   GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+   COOKIE_STORE_KEY=your_random_secure_key_here
+   ```
+
+   💡 **Tip:** Generate a secure cookie key with:
+
+   ```bash
+   openssl rand -base64 32
    ```
 
 3. **Configure Google OAuth**
@@ -55,6 +75,8 @@ A production-ready Go backend starter template with Google OAuth authentication 
    - Enable the Google+ API
    - Create OAuth 2.0 credentials
    - Add authorized redirect URI: `http://localhost:3000/auth/google/callback`
+
+   > 📝 **Note:** The `.env.example` file contains step-by-step instructions and links for setting up OAuth credentials with Google and other providers.
 
 4. **Run the application**
 
@@ -355,17 +377,40 @@ const (
 
 ## Environment Variables
 
-Create a `.env` file with the following variables:
+A comprehensive `.env.example` file is included in the repository with:
 
-```env
-# Google OAuth
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
+- 📝 Detailed comments and instructions for each variable
+- 🔗 Direct links to get OAuth credentials from each provider
+- 🔒 Security best practices and production notes
+- 📋 Examples for multiple OAuth providers (Google, GitHub, Facebook, Discord, Microsoft)
 
-# Add more providers as needed
-# GITHUB_CLIENT_ID=your_github_client_id
-# GITHUB_CLIENT_SECRET=your_github_client_secret
-```
+**To get started:**
+
+1. Copy the example file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Fill in your credentials (minimum required):
+
+   ```env
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   COOKIE_STORE_KEY=your_random_secure_key
+   ```
+
+3. (Optional) Uncomment and configure additional providers as needed
+
+The `.env.example` file includes ready-to-use templates for:
+
+- Google OAuth ✅
+- GitHub OAuth
+- Facebook OAuth
+- Discord OAuth
+- Microsoft/Azure AD OAuth
+
+> 💡 **Pro Tip:** The example file contains direct links and step-by-step instructions for obtaining credentials from each provider!
 
 ## Production Deployment
 
