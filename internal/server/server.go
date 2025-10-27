@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	"melky-goth/internal/database"
+	"github.com/GRACENOBLE/auth-starter/internal/database"
 )
 
 type Server struct {

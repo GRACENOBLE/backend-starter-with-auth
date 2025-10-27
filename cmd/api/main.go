@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"melky-goth/internal/auth"
-	"melky-goth/internal/server"
+	"github.com/GRACENOBLE/auth-starter/internal/auth"
+	"github.com/GRACENOBLE/auth-starter/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
