@@ -32,28 +32,32 @@ A production-ready Go backend starter template with Google OAuth authentication 
 ### Quick Start
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/GRACENOBLE/backend-starter-with-auth.git
    cd backend-starter-with-auth
    ```
 
 2. **Set up environment variables**
-   
+
    Create a `.env` file in the root directory:
+
    ```env
    GOOGLE_CLIENT_ID=your_google_client_id
    GOOGLE_CLIENT_SECRET=your_google_client_secret
    ```
 
 3. **Configure Google OAuth**
-   
+
    In your [Google Cloud Console](https://console.cloud.google.com/):
+
    - Create a new project or select an existing one
    - Enable the Google+ API
    - Create OAuth 2.0 credentials
    - Add authorized redirect URI: `http://localhost:3000/auth/google/callback`
 
 4. **Run the application**
+
    ```bash
    make run
    ```
@@ -61,7 +65,7 @@ A production-ready Go backend starter template with Google OAuth authentication 
    The server will start on `http://localhost:3000`
 
 5. **Test the authentication**
-   
+
    Navigate to `http://localhost:3000/auth/google` to initiate the OAuth flow.
 
 ### Frontend Integration
@@ -73,7 +77,7 @@ const handleLogin = () => {
   window.location.href = "http://localhost:3000/auth/google";
 };
 
-<button onClick={handleLogin}>Log in with Google</button>
+<button onClick={handleLogin}>Log in with Google</button>;
 ```
 
 After successful authentication, users will be redirected back with session cookies.
@@ -81,46 +85,55 @@ After successful authentication, users will be redirected back with session cook
 ## Available Make Commands
 
 Run build make command with tests
+
 ```bash
 make all
 ```
 
 Build the application
+
 ```bash
 make build
 ```
 
 Run the application
+
 ```bash
 make run
 ```
 
 Create DB container
+
 ```bash
 make docker-run
 ```
 
 Shutdown DB Container
+
 ```bash
 make docker-down
 ```
 
 DB Integrations Test:
+
 ```bash
 make itest
 ```
 
 Live reload the application:
+
 ```bash
 make watch
 ```
 
 Run the test suite:
+
 ```bash
 make test
 ```
 
 Clean up binary from the last build:
+
 ```bash
 make clean
 ```
@@ -164,6 +177,7 @@ This template uses [Goth](https://github.com/markbates/goth) by Mark Bates, whic
 #### Supported Providers
 
 Goth includes support for major providers like:
+
 - **Social**: Google, GitHub, Facebook, Twitter, LinkedIn, Instagram, Discord, Twitch
 - **Enterprise**: Microsoft, Azure AD, Salesforce, Slack, Atlassian, Auth0, Okta
 - **Developer**: GitLab, Bitbucket, DigitalOcean, Heroku
@@ -178,6 +192,7 @@ All providers are included in the main goth package, so no additional installati
 **Step 2: Get OAuth credentials**
 
 Register your application with the provider (e.g., GitHub, Facebook) to get:
+
 - Client ID
 - Client Secret
 - Configure callback URL: `http://localhost:3000/auth/{provider}/callback`
@@ -185,6 +200,7 @@ Register your application with the provider (e.g., GitHub, Facebook) to get:
 **Step 3: Add environment variables**
 
 Add to your `.env` file:
+
 ```env
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
@@ -245,6 +261,7 @@ Navigate to `http://localhost:3000/auth/github` to test GitHub authentication!
 #### Quick Examples
 
 **Facebook:**
+
 ```go
 import "github.com/markbates/goth/providers/facebook"
 
@@ -256,6 +273,7 @@ facebook.New(
 ```
 
 **Discord:**
+
 ```go
 import "github.com/markbates/goth/providers/discord"
 
@@ -268,6 +286,7 @@ discord.New(
 ```
 
 **Microsoft/Azure AD:**
+
 ```go
 import "github.com/markbates/goth/providers/microsoftonline"
 
@@ -281,10 +300,12 @@ microsoftonline.New(
 #### Using Multiple Providers Simultaneously
 
 You can enable as many providers as you need - they all work through the same route structure:
+
 - Start auth: `/auth/{provider}`
 - Callback: `/auth/{provider}/callback`
 
 Your frontend can offer multiple login options:
+
 ```jsx
 <button onClick={() => window.location.href = "http://localhost:3000/auth/google"}>
   Login with Google
@@ -315,6 +336,7 @@ For provider-specific details, check the [Goth documentation](https://github.com
 ### Updating Callback URLs
 
 Update the callback URL in `internal/auth/auth.go`:
+
 ```go
 google.New(googleClientId, googleClientSecret, "YOUR_CALLBACK_URL")
 ```
@@ -322,6 +344,7 @@ google.New(googleClientId, googleClientSecret, "YOUR_CALLBACK_URL")
 ### Session Configuration
 
 Modify session settings in `internal/auth/auth.go`:
+
 ```go
 const (
     key    = "randomString"  // Use env variable in production
@@ -349,11 +372,13 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 Before deploying to production:
 
 1. **Security**
+
    - Set `IsProd = true` in `internal/auth/auth.go`
    - Use a strong, random session key from environment variables
    - Enable HTTPS
 
 2. **Update Redirect URIs**
+
    - Update OAuth provider settings with production URLs
    - Update callback URLs in your code
 
@@ -364,6 +389,7 @@ Before deploying to production:
 ## Contributing
 
 Contributions are welcome! Feel free to:
+
 - Open issues for bugs or feature requests
 - Submit pull requests
 - Improve documentation
