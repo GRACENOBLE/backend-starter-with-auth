@@ -2,6 +2,7 @@ package auth
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gorilla/sessions"
@@ -10,8 +11,6 @@ import (
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
 )
-
-
 
 const (
 	MaxAge = 86400 * 30
@@ -33,10 +32,11 @@ func NewAuth() {
 	store.Options.Path = "/"
 	store.Options.HttpOnly = true
 	store.Options.Secure = IsProd
+	store.Options.SameSite = http.SameSiteLaxMode // Allow cookies from OAuth redirects
 
 	gothic.Store = store
 
 	goth.UseProviders(
-		google.New(googleClientId, googleClientSecret, "http://localhost:5173/auth/google/callback"),
+		google.New(googleClientId, googleClientSecret, "http://localhost:3000/auth/google/callback"),
 	)
 }

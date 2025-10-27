@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -64,15 +63,17 @@ func (s *Server) beginAuthHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) getAuthCallbackFunction(w http.ResponseWriter, r *http.Request) {
 	provider := chi.URLParam(r, "provider")
 
-	r = r.WithContext(context.WithValue(context.Background(), "provider", provider))
+	// Use r.Context() instead of context.Background() to preserve session
+	r = r.WithContext(context.WithValue(r.Context(), "provider", provider))
 
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
-		fmt.Fprintln(w, r)
+		log.Printf("Auth error: %v", err)
+		http.Error(w, "Authentication failed: "+err.Error(), http.StatusUnauthorized)
 		return
 	}
 
-	fmt.Println(user)
+	log.Printf("User authenticated: %s (%s)", user.Name, user.Email)
 
 	http.Redirect(w, r, "http://localhost:5173", http.StatusFound)
 }
