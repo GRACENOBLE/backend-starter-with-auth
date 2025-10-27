@@ -19,10 +19,6 @@ func TestConstants(t *testing.T) {
 	t.Run("IsProd should be false by default", func(t *testing.T) {
 		assert.False(t, IsProd)
 	})
-
-	t.Run("key should not be empty", func(t *testing.T) {
-		assert.NotEmpty(t, key)
-	})
 }
 
 func TestNewAuth(t *testing.T) {
@@ -54,9 +50,12 @@ func TestNewAuth(t *testing.T) {
 
 		os.Setenv("GOOGLE_CLIENT_ID", "test_client_id")
 		os.Setenv("GOOGLE_CLIENT_SECRET", "test_client_secret")
+		os.Setenv("COOKIE_STORE_KEY", "test_cookie_store_key")
+
 		defer func() {
 			os.Unsetenv("GOOGLE_CLIENT_ID")
 			os.Unsetenv("GOOGLE_CLIENT_SECRET")
+			os.Unsetenv("COOKIE_STORE_KEY")
 		}()
 
 		assert.NotPanics(t, func() {
@@ -65,6 +64,7 @@ func TestNewAuth(t *testing.T) {
 
 		assert.Equal(t, "test_client_id", os.Getenv("GOOGLE_CLIENT_ID"))
 		assert.Equal(t, "test_client_secret", os.Getenv("GOOGLE_CLIENT_SECRET"))
+		assert.Equal(t, "test_cookie_store_key", os.Getenv("COOKIE_STORE_KEY"))
 	})
 
 	t.Run("should configure gothic store", func(t *testing.T) {

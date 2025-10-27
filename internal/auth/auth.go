@@ -11,8 +11,9 @@ import (
 	"github.com/markbates/goth/providers/google"
 )
 
+
+
 const (
-	key    = "randomString" //i will get this from th env later
 	MaxAge = 86400 * 30
 	IsProd = false
 )
@@ -22,7 +23,7 @@ func NewAuth() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
+	key := os.Getenv("COOKIE_STORE_KEY")
 	googleClientId := os.Getenv("GOOGLE_CLIENT_ID")
 	googleClientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
 
