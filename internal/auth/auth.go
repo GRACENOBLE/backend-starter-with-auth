@@ -2,13 +2,13 @@ package auth
 
 import (
 	"log"
-	"melky-goth/internal/auth/providers/google"
 	"os"
 
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth/providers/google"
 )
 
 const (

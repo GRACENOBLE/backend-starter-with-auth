@@ -159,22 +159,158 @@ make clean
 
 ### Adding More OAuth Providers
 
-This template uses `goth` which supports 40+ providers. To add more:
+This template uses [Goth](https://github.com/markbates/goth) by Mark Bates, which provides a simple, clean, and idiomatic way to write authentication packages for Go web applications. Goth supports **40+ providers** out of the box!
 
-1. Install the provider package
-2. Import it in `internal/auth/auth.go`
-3. Add configuration in `NewAuth()` function
+#### Supported Providers
 
-Example for GitHub:
+Goth includes support for major providers like:
+- **Social**: Google, GitHub, Facebook, Twitter, LinkedIn, Instagram, Discord, Twitch
+- **Enterprise**: Microsoft, Azure AD, Salesforce, Slack, Atlassian, Auth0, Okta
+- **Developer**: GitLab, Bitbucket, DigitalOcean, Heroku
+- And many more! See the [full list](https://github.com/markbates/goth#supported-providers)
+
+#### How to Add a New Provider
+
+**Step 1: Install the provider package**
+
+All providers are included in the main goth package, so no additional installation is needed!
+
+**Step 2: Get OAuth credentials**
+
+Register your application with the provider (e.g., GitHub, Facebook) to get:
+- Client ID
+- Client Secret
+- Configure callback URL: `http://localhost:3000/auth/{provider}/callback`
+
+**Step 3: Add environment variables**
+
+Add to your `.env` file:
+```env
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+```
+
+**Step 4: Update `internal/auth/auth.go`**
+
+Import the provider and add it to `goth.UseProviders()`:
+
 ```go
-import "github.com/markbates/goth/providers/github"
+package auth
 
-// In NewAuth()
-goth.UseProviders(
-    google.New(...),
-    github.New(githubKey, githubSecret, callbackURL),
+import (
+	"log"
+	"melky-goth/internal/auth/providers/google"
+	"os"
+
+	"github.com/gorilla/sessions"
+	"github.com/joho/godotenv"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth/providers/github"  // Add this import
+)
+
+func NewAuth() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	// Google credentials
+	googleClientId := os.Getenv("GOOGLE_CLIENT_ID")
+	googleClientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
+
+	// GitHub credentials
+	githubClientId := os.Getenv("GITHUB_CLIENT_ID")
+	githubClientSecret := os.Getenv("GITHUB_CLIENT_SECRET")
+
+	store := sessions.NewCookieStore([]byte(key))
+	store.MaxAge(MaxAge)
+	store.Options.Path = "/"
+	store.Options.HttpOnly = true
+	store.Options.Secure = IsProd
+
+	gothic.Store = store
+
+	goth.UseProviders(
+		google.New(googleClientId, googleClientSecret, "http://localhost:3000/auth/google/callback"),
+		github.New(githubClientId, githubClientSecret, "http://localhost:3000/auth/github/callback"),
+	)
+}
+```
+
+**Step 5: Test the new provider**
+
+Navigate to `http://localhost:3000/auth/github` to test GitHub authentication!
+
+#### Quick Examples
+
+**Facebook:**
+```go
+import "github.com/markbates/goth/providers/facebook"
+
+facebook.New(
+    os.Getenv("FACEBOOK_CLIENT_ID"),
+    os.Getenv("FACEBOOK_CLIENT_SECRET"),
+    "http://localhost:3000/auth/facebook/callback",
 )
 ```
+
+**Discord:**
+```go
+import "github.com/markbates/goth/providers/discord"
+
+discord.New(
+    os.Getenv("DISCORD_CLIENT_ID"),
+    os.Getenv("DISCORD_CLIENT_SECRET"),
+    "http://localhost:3000/auth/discord/callback",
+    discord.ScopeIdentify, discord.ScopeEmail,
+)
+```
+
+**Microsoft/Azure AD:**
+```go
+import "github.com/markbates/goth/providers/microsoftonline"
+
+microsoftonline.New(
+    os.Getenv("MICROSOFT_CLIENT_ID"),
+    os.Getenv("MICROSOFT_CLIENT_SECRET"),
+    "http://localhost:3000/auth/microsoftonline/callback",
+)
+```
+
+#### Using Multiple Providers Simultaneously
+
+You can enable as many providers as you need - they all work through the same route structure:
+- Start auth: `/auth/{provider}`
+- Callback: `/auth/{provider}/callback`
+
+Your frontend can offer multiple login options:
+```jsx
+<button onClick={() => window.location.href = "http://localhost:3000/auth/google"}>
+  Login with Google
+</button>
+<button onClick={() => window.location.href = "http://localhost:3000/auth/github"}>
+  Login with GitHub
+</button>
+<button onClick={() => window.location.href = "http://localhost:3000/auth/discord"}>
+  Login with Discord
+</button>
+```
+
+#### Provider-Specific Configuration
+
+Some providers support additional scopes or options:
+
+```go
+// Request additional permissions
+google.New(clientId, secret, callback, "email", "profile", "openid")
+
+// Customize provider behavior
+provider := github.New(clientId, secret, callback)
+provider.SetName("github-custom") // Custom provider name
+```
+
+For provider-specific details, check the [Goth documentation](https://github.com/markbates/goth/tree/master/providers).
 
 ### Updating Callback URLs
 
