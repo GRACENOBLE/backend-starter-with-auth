@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -18,8 +19,26 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Warning: .env not loaded: %v", err)
+	}
+
+	allowedOriginsEnv := os.Getenv("CORS_ALLOWED_ORIGINS")
+	var allowedOrigins []string
+	if allowedOriginsEnv != "" {
+		for _, o := range strings.Split(allowedOriginsEnv, ",") {
+			if s := strings.TrimSpace(o); s != "" {
+				allowedOrigins = append(allowedOrigins, s)
+			}
+		}
+	}
+
+	if len(allowedOrigins) == 0 {
+		allowedOrigins = []string{"https://*", "http://*"}
+	}
+
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedOrigins:   allowedOrigins,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
