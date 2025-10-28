@@ -98,7 +98,7 @@ func TestServerStruct(t *testing.T) {
 	t.Run("database health should be accessible through Server", func(t *testing.T) {
 		mockDB := &MockDatabaseService{}
 		server := &Server{
-			port: 3000,
+			// port: 3000,
 			db:   mockDB,
 		}
 
